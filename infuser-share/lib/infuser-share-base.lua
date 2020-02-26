@@ -158,7 +158,9 @@ local function hasExtraAndReg(transposer, extras)
 end
 
 
-function main(extras)
+function main(extras, debugChoice)
+    debug = debugChoice
+
     local reSlot = true
     loadTransposers()
     local slots = nil
@@ -176,4 +178,4 @@ function main(extras)
     end
 end
 
-main({"Coal", "Carbon"})
+--main({"Coal", "Carbon"})
