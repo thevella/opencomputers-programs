@@ -178,4 +178,4 @@ function main(extras, debugChoice)
     end
 end
 
---main({"Coal", "Carbon"})
+--main({"Coal", "Carbon"}, true)
