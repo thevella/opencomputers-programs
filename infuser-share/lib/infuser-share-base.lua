@@ -114,39 +114,37 @@ local function hasExtraAndReg(transposer, extras)
         -- Increment the slot
         slot = slot + 1
 
-        -- if the stack exists, and is not nil, procede
-        if stack then
-            -- If the stack has items in it, procede
-            if next(stack) then
-                -- Print the keys in the array
-                if debug then
-                    printKeys(stack)
-                end
+        -- if the stack exists, and is not nil, and
+        -- has items in it, procede
+        if stack and next(stack) then
+            -- Print the keys in the array
+            if debug then
+                printKeys(stack)
+            end
 
-                -- local variable to check if it has already
-                -- been known to be an extra
-                local isExtra = false
+            -- local variable to check if it has already
+            -- been known to be an extra
+            local isExtra = false
 
-                -- Loop through valid extras
-                for i = 1, #extras do
-                    -- If the extra exists in the label, save the slot
-                    if string.find(stack["label"], extras[i]) then
-                        -- If an extra has not already been found
-                        if not hasExtra then
-                            hasExtra = true
-                            slots["extra"] = slot
-                        end
-
-                        isExtra = true
-                        break
+            -- Loop through valid extras
+            for i = 1, #extras do
+                -- If the extra exists in the label, save the slot
+                if string.find(stack["label"], extras[i]) then
+                    -- If an extra has not already been found
+                    if not hasExtra then
+                        hasExtra = true
+                        slots["extra"] = slot
                     end
-                end
 
-                -- If its not an extra, and a reg has already not been found
-                if not isExtra and not hasReg then
-                    hasReg = true
-                    slots["reg"] = slot
+                    isExtra = true
+                    break
                 end
+            end
+
+            -- If its not an extra, and a reg has already not been found
+            if not isExtra and not hasReg then
+                hasReg = true
+                slots["reg"] = slot
             end
         else
             stacks = transposer["obj"].getAllStacks(transposer["in"])
