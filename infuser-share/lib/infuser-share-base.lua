@@ -1,5 +1,6 @@
 local component = require("component")
 local os = require("os")
+local infuser_share_base = {}
 
 debug = false
 
@@ -158,7 +159,7 @@ local function hasExtraAndReg(transposer, extras)
 end
 
 
-function main(extras, debugChoice)
+function infuser_share_base.main(extras, debugChoice)
     debug = debugChoice
 
     local reSlot = true
@@ -178,4 +179,5 @@ function main(extras, debugChoice)
     end
 end
 
+return infuser_share_base
 --main({"Coal", "Carbon"}, true)
