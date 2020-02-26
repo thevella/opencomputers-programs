@@ -112,11 +112,9 @@ local inInventory(transposer, stackTest, inv)
 end
 
 -- Function to check if the required objects exist
-local function hasExtraAndReg(transposer, extras)
+local function hasExtraAndReg(transposer, extras, threshold)
     -- flag for if extra and reg are found
-    local has = {}
-    has.extra = false
-    has.reg = false
+    local has = {extra = false, reg = false}
 
     -- all of the stacks in the in inventory
     local stacks = transposer.obj.getAllStacks(transposer.in)
@@ -131,9 +129,12 @@ local function hasExtraAndReg(transposer, extras)
     -- inside the loop
     local slot = -1
 
-    local sizes = {}
-    sizes.reg = 0
-    sizes.extra = 0
+    -- Store Stack size
+    local sizes = {reg = 0, extra = 0}
+
+    -- Store number of tries to put an item into
+    -- the recieving inventory
+    local tries = 0
 
     -- next function, here for speed
     local next = next
@@ -141,6 +142,11 @@ local function hasExtraAndReg(transposer, extras)
     -- While either hasReg or hasExtra is false
     -- Look for regular and extra items
     while (not has.reg) or (not has.extra) do
+        if tries > threshold then
+            slots.failed = true
+            break
+        end
+
         -- Next stack item
         stack = stacks()
         -- Increment the slot
@@ -175,7 +181,7 @@ local function hasExtraAndReg(transposer, extras)
                 end
 
                 -- If its not an extra, and a reg has already not been found
-                if not isExtra and (not has.reg or sizes.reg < stack.size) then
+                if not isExtra and (not has.reg or sizes.reg < stack.size) and inInventory(transposer, stack, transposer.machine) then
                     has.reg = true
                     slots.reg = slot
                 end
@@ -187,6 +193,7 @@ local function hasExtraAndReg(transposer, extras)
             has.extra = false
             sizes.reg = 0
             sizes.extra = 0
+            tries = tries + 1
 
         end
 
@@ -197,23 +204,34 @@ local function hasExtraAndReg(transposer, extras)
 end
 
 
-function infuser_share_base.main(extras, debugChoice)
+function infuser_share_base.main(extras, debugChoice, threshold)
     debug = debugChoice
 
     local reSlot = true
     loadTransposers()
     local slots = nil
     while true do
-        for i=1,#transposers do
-            if reSlot then
-                slots = hasExtraAndReg(transposers[i], extras)
-                reSlot = false
+        for try=1,threshold do
+            for i=1,#transposers do
+                if reSlot then
+                    slots = hasExtraAndReg(transposers[i], extras, threshold)
+                    reSlot = false
+                end
+
+                if slots.failed then
+                    reslot = true
+
+                else
+                    print("success")
+                end
+
+
+
+                os.sleep(0)
             end
-
-
             os.sleep(0)
         end
-        os.sleep(0)
+        reSlot = true
     end
 end
 
