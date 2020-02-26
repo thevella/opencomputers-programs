@@ -1,11 +1,13 @@
 local infuser_share_base = require("infuser-share-base")
+local shell = require("shell")
+
 local debug = false
 
+local args, options = shell.parse(...)
+
 local next = next
-if arg and next(arg) then
-    if arg[1] == "--debug" then
-        debug = true
-    end
+if args and next(args) then
+    debug = args[1] == "debug"
 end
 
-infuser_share_base.main({"Coal", "Carbon"}, false)
+infuser_share_base.main({"Coal", "Carbon"}, debug)

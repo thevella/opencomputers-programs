@@ -2,9 +2,9 @@ local component = require("component")
 local os = require("os")
 local infuser_share_base = {}
 
-debug = false
+local debug = false
 
-transposers = {}
+local transposers = {}
 
 -- Check if string is empty
 local function isempty(st)
