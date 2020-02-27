@@ -1,5 +1,6 @@
 local component = require("component")
 local os = require("os")
+
 local infuser_share_base = {}
 
 local debug = false
@@ -86,7 +87,7 @@ local function loadTransposers()
 end
 
 -- Check if the item can be added to the inventory
-local inInventory(transposer, stackTest, inv)
+local function inInventory(transposer, stackTest, inv)
     local stacks = transposer.obj.getAllStacks(inv)
     local stack = nil
 
