@@ -130,9 +130,9 @@ local function hasExtraAndReg(transposer, extras, threshold)
     -- where the extra and reg item stacks are
     local slots = {extra = nil, reg = nil, failed=false}
 
-    -- The current slot, starts at 0, but is incremented
+    -- The current slot, starts at 1, but is incremented
     -- inside the loop
-    local slot = -1
+    local slot = 0
 
     -- Store Stack size
     local sizes = {extra = 0, reg = 0}
@@ -197,9 +197,9 @@ local function hasExtraAndReg(transposer, extras, threshold)
             -- Grab new stacks object
             stacks = transposer.obj.getAllStacks(transposer.inv)
 
-            -- Reset slot to 0, but is incremented before next evaluation,
-            -- it is set to -1
-            slot = -1
+            -- Reset slot to 1, but is incremented before next evaluation,
+            -- it is set to 0
+            slot = 0
 
             -- Reset slots to nil so we do not skip checking new
             slots.reg = nil
@@ -245,7 +245,6 @@ function infuser_share_base.main(extras, debugChoice, threshold)
 
     local slots = nil
 
-
     while true do
         -- Loop as many as the threshold
         for try=1,threshold do
@@ -268,7 +267,13 @@ function infuser_share_base.main(extras, debugChoice, threshold)
 
                 -- If it failed, reslot
                 if not slots.failed then
-                    print("success")
+                    if debug then
+                        print("transfering : ")
+                    end
+
+                    transposers[i].obj.transferItem(transposers[i].inv, transposers[i].machine, 1, slots.reg, 1)
+                    transposers[i].obj.transferItem(transposers[i].inv, transposers[i].extra, 1, slots.extra, 1)
+
                 else
                     reslot = true
                 end
