@@ -89,16 +89,13 @@ end
 -- Check if the item can be added to the inventory
 local function inInventory(transposer, stackTest, inv)
     local stacks = transposer.obj.getAllStacks(inv)
-    local stack = nil
+    local stack = stacks()
 
 
     local next = next
     -- Only loop over the stacks once, if not there
     -- Fail
     repeat
-        -- Grab next stack
-        stack = stacks()
-
         -- If the stack exists
         if stack then
             -- If the item is nil, it is empty and there
@@ -113,11 +110,51 @@ local function inInventory(transposer, stackTest, inv)
                 return true
             end
         end
+
+        -- Grab next stack
+        stack = stacks()
         os.sleep(0)
     until (not stack)
 
     -- If the stack wasn't in inventory, return false
     return false
+end
+
+local function machineInvCount(transposer)
+    local stacks = transposer.obj.getAllStacks(inv)
+    local stack = stacks()
+
+    local counts = {empty = 0}
+
+
+    local next = next
+    -- Only loop over the stacks once
+    repeat
+        -- If the stack exists
+        if stack then
+            -- If the item is nil, it is empty and there
+            -- is space, otherwise check other conditions
+            if next(stack) then
+                -- If the stack doesn not have an entry, add it
+                -- otherwise, add new values to old
+                if not counts[stack.name] or not next(counts[stack.name]) then
+                    counts[stack.name] = {count = stack.size, space = stack.maxSize - stack.size}
+                else
+                    counts[stack.name].count = counts[stack.name].count + stack.size
+                    counts[stack.name].space = counts[stack.name].space + (stack.maxSize - stack.size)
+                end
+            else
+                counts.empty = counts.empty + 1
+            end
+        end
+
+        -- Grab next stack
+        stack = stacks()
+        os.sleep(0)
+    until (not stack)
+
+    return counts
+
 end
 
 -- Function to check if the required objects exist
@@ -126,6 +163,8 @@ local function hasExtraAndReg(transposer, extras, threshold)
     local stacks = transposer.obj.getAllStacks(transposer.inv)
     -- The current stack, initialized in the loop
     local stack = nil
+
+    local counts = machineInvCount(transposer)
 
     -- where the extra and reg item stacks are
     local slots = {extra = nil, reg = nil, failed=false}
@@ -143,6 +182,8 @@ local function hasExtraAndReg(transposer, extras, threshold)
 
     -- next function, here for speed
     local next = next
+
+
 
     -- While either hasReg or hasExtra is false
     -- Look for regular and extra items
@@ -180,8 +221,10 @@ local function hasExtraAndReg(transposer, extras, threshold)
                 end
 
                 -- If its not an extra, and a reg has already not been found
-                if not isExtra and (not slots.reg or sizes.reg < stack.size) and inInventory(transposer, stack, transposer.machine) then
-                    slots.reg = slot
+                if not isExtra and (not slots.reg or sizes.reg < stack.size) then
+                    if (counts[stack.name] and counts[stack.name].space > 0) or counts.empty > 0 then
+                        slots.reg = slot
+                    end
                 end
             end
         -- If the stack was nil, we reached the end of the
@@ -196,6 +239,7 @@ local function hasExtraAndReg(transposer, extras, threshold)
 
             -- Grab new stacks object
             stacks = transposer.obj.getAllStacks(transposer.inv)
+            counts = machineInvCount(transposer)
 
             -- Reset slot to 1, but is incremented before next evaluation,
             -- it is set to 0
@@ -282,6 +326,7 @@ function infuser_share_base.main(extras, debugChoice, threshold)
 
                     reSlot = true
 
+                    reSlot = true
                 else
                     reSlot = true
                 end
