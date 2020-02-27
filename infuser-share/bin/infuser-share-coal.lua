@@ -10,7 +10,7 @@ local threshold = 2
 local next = next
 
 if args and next(args) then
-    for i=1,#args then
+    for i=1,#args do
         if args[i] == "debug" then
             debug = true
         elseif string.find(args[i], "threshold=") then
@@ -29,7 +29,7 @@ end
 
 if options and next(options) then
     for k,v in options do
-        
+
     end
 end
 
