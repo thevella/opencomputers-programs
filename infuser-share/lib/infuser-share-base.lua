@@ -262,6 +262,12 @@ function infuser_share_base.main(extras, debugChoice, threshold)
                 -- Only reslot when needed
                 if reSlot then
                     slots = hasExtraAndReg(transposers[i], extras, threshold)
+                    if debug then
+                        print("\nSlots : ")
+                        print("  Reg   : ", slots.reg)
+                        print("  Extra : ", slots.extra)
+                    end
+
                     reSlot = false
                 end
 
@@ -271,11 +277,13 @@ function infuser_share_base.main(extras, debugChoice, threshold)
                         print("transfering : ")
                     end
 
-                    transposers[i].obj.transferItem(transposers[i].inv, transposers[i].machine, 1, slots.reg, 1)
-                    transposers[i].obj.transferItem(transposers[i].inv, transposers[i].extra, 1, slots.extra, 1)
+                    transposers[i].obj.transferItem(transposers[i].inv, transposers[i].machine, 64, slots.reg)
+                    transposers[i].obj.transferItem(transposers[i].inv, transposers[i].extra, 64, slots.extra)
+
+                    reSlot = true
 
                 else
-                    reslot = true
+                    reSlot = true
                 end
 
                 os.sleep(0)
