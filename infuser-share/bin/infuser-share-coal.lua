@@ -28,8 +28,8 @@ if args and next(args) then
 end
 
 if options and next(options) then
-    for k,v in options then
-
+    for k,v in options do
+        
     end
 end
 

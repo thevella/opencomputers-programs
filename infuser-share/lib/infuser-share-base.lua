@@ -250,6 +250,15 @@ function infuser_share_base.main(extras, debugChoice, threshold)
         for try=1,threshold do
             -- Loop through all transposers
             for i=1,#transposers do
+                if debug then
+                    print("Transposer : ", i)
+                    print("  Address : ", transposers[i].obj.address)
+                    print("  Machine : ", transposers[i].machine)
+                    print("  In      : ", transposers[i].in)
+                    print("  Extras  : ", transposers[i].extra)
+                    print("")
+                end
+
                 -- Only reslot when needed
                 if reSlot then
                     slots = hasExtraAndReg(transposers[i], extras, threshold)
