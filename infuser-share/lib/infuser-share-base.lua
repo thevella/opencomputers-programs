@@ -58,7 +58,7 @@ local function loadTransposers()
                 -- If it is enderstorage, it is assumed to
                 -- be input
                 elseif string.find(inv, "enderstorage") then
-                    transposer.in = i
+                    transposer.inv = i
                     if debug then
                         print("in : ", inv)
                     end
@@ -122,7 +122,7 @@ end
 -- Function to check if the required objects exist
 local function hasExtraAndReg(transposer, extras, threshold)
     -- all of the stacks in the in inventory
-    local stacks = transposer.obj.getAllStacks(transposer.in)
+    local stacks = transposer.obj.getAllStacks(transposer.inv)
     -- The current stack, initialized in the loop
     local stack = nil
 
@@ -194,7 +194,7 @@ local function hasExtraAndReg(transposer, extras, threshold)
             end
 
             -- Grab new stacks object
-            stacks = transposer.obj.getAllStacks(transposer.in)
+            stacks = transposer.obj.getAllStacks(transposer.inv)
 
             -- Reset slot to 0, but is incremented before next evaluation,
             -- it is set to -1
@@ -254,7 +254,7 @@ function infuser_share_base.main(extras, debugChoice, threshold)
                     print("Transposer : ", i)
                     print("  Address : ", transposers[i].obj.address)
                     print("  Machine : ", transposers[i].machine)
-                    print("  In      : ", transposers[i].in)
+                    print("  In      : ", transposers[i].inv)
                     print("  Extras  : ", transposers[i].extra)
                     print("")
                 end
