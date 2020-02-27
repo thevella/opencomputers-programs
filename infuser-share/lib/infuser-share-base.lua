@@ -121,7 +121,7 @@ local function inInventory(transposer, stackTest, inv)
 end
 
 local function machineInvCount(transposer)
-    local stacks = transposer.obj.getAllStacks(inv)
+    local stacks = transposer.obj.getAllStacks(transposer.inv)
     local stack = stacks()
 
     local counts = {empty = 0}
@@ -321,12 +321,13 @@ function infuser_share_base.main(extras, debugChoice, threshold)
                         print("transfering : ")
                     end
 
-                    transposers[i].obj.transferItem(transposers[i].inv, transposers[i].machine, 64, slots.reg)
-                    transposers[i].obj.transferItem(transposers[i].inv, transposers[i].extra, 64, slots.extra)
+                    transposers[i].obj.transferItem(transposers[i].inv, transposers[i].machine, 1, slots.reg)
+                    transposers[i].obj.transferItem(transposers[i].inv, transposers[i].extra, 1, slots.extra)
 
-                    reSlot = true
-
-                    reSlot = true
+                    if not transposers[i].obj.getStackInSlot(transposers[i].inv, slots.reg) or not transposers[i].obj.getStackInSlot(transposers[i].inv, slots.extra) then
+                        reSlot = true
+                    end
+                    
                 else
                     reSlot = true
                 end
