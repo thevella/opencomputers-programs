@@ -121,7 +121,7 @@ local function inInventory(transposer, stackTest, inv)
 end
 
 local function machineInvCount(transposer)
-    local stacks = transposer.obj.getAllStacks(transposer.inv)
+    local stacks = transposer.obj.getAllStacks(transposer.machine)
     local stack = stacks()
 
     local counts = {empty = 0}
@@ -139,9 +139,22 @@ local function machineInvCount(transposer)
                 -- otherwise, add new values to old
                 if not counts[stack.name] or not next(counts[stack.name]) then
                     counts[stack.name] = {count = stack.size, space = stack.maxSize - stack.size}
+                    if debug then
+                        print("New Machine Stack : ")
+                        print("  Name   : ", stack.name)
+                        print("  Amount : ", stack.size)
+                        print("")
+                    end
                 else
                     counts[stack.name].count = counts[stack.name].count + stack.size
                     counts[stack.name].space = counts[stack.name].space + (stack.maxSize - stack.size)
+                    if debug then
+                        print("Update Machine Stack : ")
+                        print("  Name         : ", stack.name)
+                        print("  Amount       : ", stack.size)
+                        print("  Total Amount : ", counts[stack.name].count)
+                        print("")
+                    end
                 end
             else
                 counts.empty = counts.empty + 1
