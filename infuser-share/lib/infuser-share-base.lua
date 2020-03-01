@@ -313,12 +313,18 @@ function infuser_share_base.main(extras, debugChoice, threshold)
                     if transfered then
                         transposers[i].obj.transferItem(transposers[i].inv, transposers[i].extra, transfered, slots.extra)
                     end
+
+                    if transfered == slots.min then
+                        reSlot = true
+                    end
                 else
                     reSlot = true
                 end
             end
             os.sleep(0)
         end
+
+        reSlot = true
 
     end
 end
