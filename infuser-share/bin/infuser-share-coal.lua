@@ -33,4 +33,4 @@ if options and next(options) then
     end
 end
 
-infuser_share_base.main({"Coal", "Carbon"}, debug, threshold)
+infuser_share_base.main({"minecraft:coal", "mekanism:compressedcarbon"}, debug, threshold)
