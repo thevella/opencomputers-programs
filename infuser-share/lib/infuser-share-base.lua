@@ -58,7 +58,7 @@ local function loadTransposers()
 
                 -- If it is enderstorage, it is assumed to
                 -- be input
-                elseif inv == "enderstorage:ender_storage") then
+                elseif inv == "enderstorage:ender_storage" then
                     transposer.inv = i
                     if debug then
                         print("in : ", inv)
@@ -66,7 +66,7 @@ local function loadTransposers()
 
                 -- If it is a valid inventory, but not any of
                 -- the predefined ones, then it is extra out
-                elseif not inv == nil then
+                elseif not string.find(inv, "nil") then
                     transposer.extra = i
                     if debug then
                         print("extra : ", inv)
@@ -84,40 +84,6 @@ local function loadTransposers()
         end
 
     end
-end
-
--- Check if the item can be added to the inventory
-local function inInventory(transposer, stackTest, inv)
-    local stacks = transposer.obj.getAllStacks(inv)
-    local stack = stacks()
-
-
-    local next = next
-    -- Only loop over the stacks once, if not there
-    -- Fail
-    repeat
-        -- If the stack exists
-        if stack then
-            -- If the item is nil, it is empty and there
-            -- is space, otherwise check other conditions
-            if next(stack) then
-                -- If the stack has the same name and the size is less
-                -- than the max stack size, there is space. Return true
-                if stack["name"] == stackTest["name"] and stack.size < stack.maxSize then
-                    return true
-                end
-            else
-                return true
-            end
-        end
-
-        -- Grab next stack
-        stack = stacks()
-        os.sleep(0)
-    until (not stack)
-
-    -- If the stack wasn't in inventory, return false
-    return false
 end
 
 local function machineInvCount(transposer)
@@ -227,6 +193,7 @@ local function hasExtraAndReg(transposer, extras, threshold)
                         -- If an extra has not already been found
                         if not slots.extra or sizes.extra < stack.size then
                             slots.extra = slot
+                            sizes.extra = stack.size
                         end
 
                         isExtra = true
@@ -238,6 +205,7 @@ local function hasExtraAndReg(transposer, extras, threshold)
                 if not isExtra and (not slots.reg or sizes.reg < stack.size) then
                     if (counts[stack.name] and counts[stack.name].space > 0) or counts.empty > 0 then
                         slots.reg = slot
+                        sizes.reg = stack.size
                     end
                 end
             end
@@ -275,6 +243,10 @@ local function hasExtraAndReg(transposer, extras, threshold)
 
     end
     os.sleep(0)
+
+    if not slots.failed then
+        slots.min = math.min(sizes.reg, sizes.extra)
+    end
 
     -- Return placements of the slots, and whether it failed
     return slots
@@ -337,8 +309,9 @@ function infuser_share_base.main(extras, debugChoice, threshold)
                         print("transfering : ")
                     end
 
-                    if transposers[i].obj.transferItem(transposers[i].inv, transposers[i].machine, 1, slots.reg) == 1 then
-                        transposers[i].obj.transferItem(transposers[i].inv, transposers[i].extra, 1, slots.extra)
+                    local transfered = transposers[i].obj.transferItem(transposers[i].inv, transposers[i].machine, slots.min, slots.reg)
+                    if transfered then
+                        transposers[i].obj.transferItem(transposers[i].inv, transposers[i].extra, transfered, slots.extra)
                     end
                 else
                     reSlot = true
