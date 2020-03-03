@@ -147,7 +147,7 @@ local function hasExtraAndReg(transposer, extras, threshold)
     local counts = machineInvCount(transposer)
 
     -- where the extra and reg item stacks are
-    local slots = {extra = nil, reg = nil, failed=false}
+    local slots = {extra = nil, reg = nil, failed=false, compressed=false}
 
     -- The current slot, starts at 1, but is incremented
     -- inside the loop
@@ -194,6 +194,7 @@ local function hasExtraAndReg(transposer, extras, threshold)
                         if not slots.extra or sizes.extra < stack.size then
                             slots.extra = slot
                             sizes.extra = stack.size
+                            slots.compressed = string.find(stack.name, "compressed")
                         end
 
                         isExtra = true
@@ -245,7 +246,13 @@ local function hasExtraAndReg(transposer, extras, threshold)
     os.sleep(0)
 
     if not slots.failed then
-        slots.min = math.min(sizes.reg, sizes.extra)
+        -- If compressed, multiply the extra by 8 to get
+        -- real size
+        if slots.compressed then
+            slots.min = math.min(sizes.reg, sizes.extra*8)
+        else
+            slots.min = math.min(sizes.reg, sizes.extra)
+        end
     end
 
     -- Return placements of the slots, and whether it failed
@@ -311,6 +318,11 @@ function infuser_share_base.main(extras, debugChoice, threshold)
 
                     local transfered = transposers[i].obj.transferItem(transposers[i].inv, transposers[i].machine, slots.min, slots.reg)
                     if transfered then
+                        -- If its compressed, move only as many
+                        -- items as 1/8 th as many of regular
+                        if slots.compressed then
+                            transfered = math.ceil(transfered/8)
+                        end
                         transposers[i].obj.transferItem(transposers[i].inv, transposers[i].extra, transfered, slots.extra)
                     end
 
